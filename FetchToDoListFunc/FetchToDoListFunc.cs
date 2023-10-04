@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using FetchToDoListFunc.Repository;
 using System.Collections.Generic;
 using FetchToDoListFunc.Model;
+using MongoDB.Bson;
 
 namespace FetchToDoListFunc
 {
@@ -38,7 +39,7 @@ namespace FetchToDoListFunc
             return new OkObjectResult(await _fetchRepo.GetAllAsync());
         }
 
-        [FunctionName("add-product")]
+        [FunctionName("add-task")]
         public async Task<ActionResult<List<TaskList>>> CreateAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req, ILogger logger)
         {
             try
@@ -56,6 +57,41 @@ namespace FetchToDoListFunc
                     TotalEffortRequired=input.TotalEffortRequired
                 };
                 return new OkObjectResult(await _fetchRepo.CreateAsync(task));
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+                throw;
+            }
+        }
+
+        [FunctionName("gettaskbytaskname}")]
+        public async Task<ActionResult<IEnumerable<TaskList>>> GetTaskDetails([HttpTrigger(AuthorizationLevel.Function, "get", Route = "gettaskbytaskname/{taskname}")] HttpRequest req, ILogger logger,string taskname)
+        {
+            return new OkObjectResult(await _fetchRepo.GetTaskDetailsByTaskNameAsync(taskname));
+        }
+
+        [FunctionName("update-task")]
+        public async Task<ActionResult<List<TaskList>>> UpdateTaskStatus([HttpTrigger(AuthorizationLevel.Function, "put", Route = "update-task/{id}")] HttpRequest req, ILogger logger,string id)
+        {
+            try
+            {
+
+                return new OkObjectResult(await _fetchRepo.UpdateTaskStatusAsync(id));
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+                throw;
+            }
+        }
+
+        [FunctionName("delete-task")]
+        public async Task<ActionResult> DeleteProduct([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "delete-product/{id}")] HttpRequest request, ILogger logger, string id)
+        {
+            try
+            {
+                return new OkObjectResult(await _fetchRepo.DeleteTaskAsync(id));
             }
             catch (Exception ex)
             {

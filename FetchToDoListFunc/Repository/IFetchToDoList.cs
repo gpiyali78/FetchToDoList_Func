@@ -13,7 +13,9 @@ namespace FetchToDoListFunc.Repository
         Task<List<TaskList>> GetAllAsync();
         Task<int> GetLatestTaskIdAsync();
         Task<TaskList> GetTaskDetailsByTaskIdAsync(string taskId);
-        Task<TaskList> GetTaskDetailsByTaskNameAsync(string taskName);
+        Task<ActionResult<TaskList>> GetTaskDetailsByTaskNameAsync(string taskName);
         Task<ActionResult> CreateAsync(TaskList toDolist);
+        Task<ActionResult> UpdateTaskStatusAsync(string taskID);
+        Task<ActionResult> DeleteTaskAsync(string taskId);
     }
 }

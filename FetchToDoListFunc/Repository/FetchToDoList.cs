@@ -32,6 +32,20 @@ namespace FetchToDoListFunc.Repository
             }
         }
 
+        public async Task<ActionResult> DeleteTaskAsync(string taskId)
+        {
+            try
+            {
+                await _taskCollection.FindOneAndDeleteAsync(Builders<TaskList>.Filter.Eq("_id", taskId));
+                return new OkObjectResult("Task Deleted Successfully");
+            }
+            catch (Exception ex)
+            {
+                return new NotFoundObjectResult(ex.Message);
+                throw;
+            }
+        }
+
         public async Task<List<TaskList>> GetAllAsync()
         {
             List<TaskList> tasks = null;
@@ -57,9 +71,32 @@ namespace FetchToDoListFunc.Repository
             throw new NotImplementedException();
         }
 
-        public Task<TaskList> GetTaskDetailsByTaskNameAsync(string taskName)
+        public async Task<ActionResult<TaskList>> GetTaskDetailsByTaskNameAsync(string taskName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var product = await _taskCollection.Find(_ => _.TaskName.Equals(taskName)).ToListAsync<TaskList>();
+                return new OkObjectResult(product);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<ActionResult> UpdateTaskStatusAsync(string taskId)
+        {
+            try
+            {
+                await _taskCollection.FindOneAndUpdateAsync(Builders<TaskList>.Filter.Eq("_id", taskId), Builders<TaskList>.Update.Set("TaskStatus", "Completed"));
+                return new OkObjectResult("Task updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+                throw;
+            }
         }
     }
 }
