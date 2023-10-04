@@ -65,7 +65,7 @@ namespace FetchToDoListFunc
             }
         }
 
-        [FunctionName("gettaskbytaskname}")]
+        [FunctionName("gettaskbytaskname")]
         public async Task<ActionResult<IEnumerable<TaskList>>> GetTaskDetails([HttpTrigger(AuthorizationLevel.Function, "get", Route = "gettaskbytaskname/{taskname}")] HttpRequest req, ILogger logger,string taskname)
         {
             return new OkObjectResult(await _fetchRepo.GetTaskDetailsByTaskNameAsync(taskname));
