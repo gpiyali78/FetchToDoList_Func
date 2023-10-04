@@ -19,7 +19,7 @@ namespace FetchToDoList_Func
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            return "Hi"; 
+            return "Hello"; 
         }
     }
 }
