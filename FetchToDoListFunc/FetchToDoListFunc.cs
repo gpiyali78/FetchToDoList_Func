@@ -48,7 +48,7 @@ namespace FetchToDoListFunc
                 var input = JsonConvert.DeserializeObject<TaskList>(reqBody);
                 var task = new TaskList
                 {
-                    TaskId=input.TaskId,
+                    //TaskId=input.TaskId,
                     TaskName=input.TaskName,
                     Description=input.Description,
                     TaskStartDate=input.TaskStartDate,
