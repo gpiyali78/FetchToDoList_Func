@@ -18,6 +18,20 @@ namespace FetchToDoListFunc.Repository
             _taskCollection = database.GetCollection<TaskList>("todolist");
         }
 
+        public async Task<ActionResult> CreateAsync(TaskList toDolist)
+        {
+            try
+            {
+                await _taskCollection.InsertOneAsync(toDolist);
+                return new OkObjectResult("Task Added Successfully");
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+                throw;
+            }
+        }
+
         public async Task<List<TaskList>> GetAllAsync()
         {
             List<TaskList> tasks = null;

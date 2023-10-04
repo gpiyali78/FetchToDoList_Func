@@ -1,4 +1,5 @@
 ﻿using FetchToDoListFunc.Model;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace FetchToDoListFunc.Repository
         Task<int> GetLatestTaskIdAsync();
         Task<TaskList> GetTaskDetailsByTaskIdAsync(string taskId);
         Task<TaskList> GetTaskDetailsByTaskNameAsync(string taskName);
+        Task<ActionResult> CreateAsync(TaskList toDolist);
     }
 }

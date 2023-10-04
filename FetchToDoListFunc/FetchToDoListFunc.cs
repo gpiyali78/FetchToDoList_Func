@@ -37,5 +37,31 @@ namespace FetchToDoListFunc
         {
             return new OkObjectResult(await _fetchRepo.GetAllAsync());
         }
+
+        [FunctionName("add-product")]
+        public async Task<ActionResult<List<TaskList>>> CreateAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req, ILogger logger)
+        {
+            try
+            {
+                var reqBody = await new StreamReader(req.Body).ReadToEndAsync();
+                var input = JsonConvert.DeserializeObject<TaskList>(reqBody);
+                var task = new TaskList
+                {
+                    TaskId=input.TaskId,
+                    TaskName=input.TaskName,
+                    Description=input.Description,
+                    TaskStartDate=input.TaskStartDate,
+                    TaskEndDate=input.TaskEndDate,
+                    TaskStatus=input.TaskStatus,
+                    TotalEffortRequired=input.TotalEffortRequired
+                };
+                return new OkObjectResult(await _fetchRepo.CreateAsync(task));
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+                throw;
+            }
+        }
     }
 }
