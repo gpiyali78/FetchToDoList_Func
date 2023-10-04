@@ -77,7 +77,7 @@ namespace FetchToDoListFunc
             try
             {
 
-                return new OkObjectResult(await _fetchRepo.UpdateTaskStatusAsync(id));
+                return new OkObjectResult(await _fetchRepo.UpdateTaskStatusAsync(ObjectId.Parse(id)));
             }
             catch (Exception ex)
             {
@@ -91,7 +91,7 @@ namespace FetchToDoListFunc
         {
             try
             {
-                return new OkObjectResult(await _fetchRepo.DeleteTaskAsync(id));
+                return new OkObjectResult(await _fetchRepo.DeleteTaskAsync(ObjectId.Parse(id)));
             }
             catch (Exception ex)
             {

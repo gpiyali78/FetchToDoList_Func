@@ -1,5 +1,6 @@
 ﻿using FetchToDoListFunc.Model;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace FetchToDoListFunc.Repository
             }
         }
 
-        public async Task<ActionResult> DeleteTaskAsync(string taskId)
+        public async Task<ActionResult> DeleteTaskAsync(ObjectId taskId)
         {
             try
             {
@@ -66,7 +67,7 @@ namespace FetchToDoListFunc.Repository
             throw new NotImplementedException();
         }
 
-        public Task<TaskList> GetTaskDetailsByTaskIdAsync(string taskId)
+        public Task<TaskList> GetTaskDetailsByTaskIdAsync(ObjectId taskId)
         {
             throw new NotImplementedException();
         }
@@ -85,7 +86,7 @@ namespace FetchToDoListFunc.Repository
             }
         }
 
-        public async Task<ActionResult> UpdateTaskStatusAsync(string taskId)
+        public async Task<ActionResult> UpdateTaskStatusAsync(ObjectId taskId)
         {
             try
             {

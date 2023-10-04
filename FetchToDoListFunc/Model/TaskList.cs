@@ -11,8 +11,7 @@ namespace FetchToDoListFunc.Model
     public class TaskList
     {
         [BsonId]
-        [BsonRepresentation(BsonType.Int64)]
-        public int TaskId { get; set; }
+        public ObjectId TaskId { get; set; }
         public string TaskName { get; set; }
         public string Description { get; set; }
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
