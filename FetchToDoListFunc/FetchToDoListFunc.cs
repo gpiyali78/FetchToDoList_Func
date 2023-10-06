@@ -12,12 +12,15 @@ using System.Collections.Generic;
 using FetchToDoListFunc.Model;
 using MongoDB.Bson;
 using FetchToDoListFunc.Utility;
+using Microsoft.ApplicationInsights;
 
 namespace FetchToDoListFunc
 {
     public class FetchToDoListFunc
     {
         private readonly IFetchToDoList _fetchRepo;
+        private static readonly TelemetryClient telemetryClient = new TelemetryClient();
+
 
         public FetchToDoListFunc(IFetchToDoList fetRepo)
         {
@@ -30,6 +33,7 @@ namespace FetchToDoListFunc
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
+            telemetryClient.TrackEvent("Fetch function Executed");
 
             // Check if we have authentication info.
             ValidateJWT auth = new ValidateJWT(req);
@@ -37,18 +41,33 @@ namespace FetchToDoListFunc
             {
                 return new UnauthorizedResult(); // No authentication info.
             }
-            return new OkObjectResult("hurray"); ;
+            return new OkObjectResult("hurray"); 
         }
 
         [FunctionName("getall")]
         public async Task<ActionResult<IEnumerable<TaskList>>> GetAllTask([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger logger)
         {
-            ValidateJWT auth = new ValidateJWT(req);
-            if (!auth.IsValid)
+            try
             {
-                return new UnauthorizedResult(); // No authentication info.
+                logger.LogInformation("getall function called");
+                telemetryClient.TrackEvent("getall function called");
+
+                ValidateJWT auth = new ValidateJWT(req);
+                if (!auth.IsValid)
+                {
+                    logger.LogInformation("getall function - unauthorized");
+                    telemetryClient.TrackEvent("getall function - unauthorized");
+                    return new UnauthorizedResult(); // No authentication info.
+                }
+
+                return new OkObjectResult(await _fetchRepo.GetAllAsync());
+            }catch (Exception ex)
+            {
+                logger.LogError("getall function" + ex.Message);
+                telemetryClient.TrackEvent("getall function" + ex.Message);
+                return new BadRequestObjectResult(ex.Message);
+                throw;
             }
-            return new OkObjectResult(await _fetchRepo.GetAllAsync());
         }
 
         [FunctionName("add-task")]
@@ -56,9 +75,14 @@ namespace FetchToDoListFunc
         {
             try
             {
+                logger.LogInformation("add-task function called");
+                telemetryClient.TrackEvent("add-task function called");
+
                 ValidateJWT auth = new ValidateJWT(req);
                 if (!auth.IsValid)
                 {
+                    logger.LogInformation("add-task function - unauthorized");
+                    telemetryClient.TrackEvent("add-task function - unauthorized");
                     return new UnauthorizedResult(); // No authentication info.
                 }
                 var reqBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -77,6 +101,8 @@ namespace FetchToDoListFunc
             }
             catch (Exception ex)
             {
+                logger.LogError("add-task function" + ex.Message);
+                telemetryClient.TrackEvent("add-task function" + ex.Message);
                 return new BadRequestObjectResult(ex.Message);
                 throw;
             }
@@ -85,12 +111,25 @@ namespace FetchToDoListFunc
         [FunctionName("gettaskbytaskname")]
         public async Task<ActionResult<IEnumerable<TaskList>>> GetTaskDetails([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "gettaskbytaskname/{taskname}")] HttpRequest req, ILogger logger,string taskname)
         {
-            ValidateJWT auth = new ValidateJWT(req);
-            if (!auth.IsValid)
+            try
             {
-                return new UnauthorizedResult(); // No authentication info.
+                logger.LogInformation("gettaskbytaskname function called");
+                telemetryClient.TrackEvent("gettaskbytaskname function called");
+                ValidateJWT auth = new ValidateJWT(req);
+                if (!auth.IsValid)
+                {
+                    logger.LogInformation("gettaskbytaskname function - unauthorized");
+                    telemetryClient.TrackEvent("gettaskbytaskname function - unauthorized");
+                    return new UnauthorizedResult(); // No authentication info.
+                }
+                return new OkObjectResult(await _fetchRepo.GetTaskDetailsByTaskNameAsync(taskname));
+            }catch(Exception ex)
+            {
+                logger.LogError("gettaskbytaskname function" + ex.Message);
+                telemetryClient.TrackEvent("gettaskbytaskname function" + ex.Message);
+                return new BadRequestObjectResult(ex.Message);
+                throw;
             }
-            return new OkObjectResult(await _fetchRepo.GetTaskDetailsByTaskNameAsync(taskname));
         }
 
         [FunctionName("update-task")]
@@ -98,15 +137,22 @@ namespace FetchToDoListFunc
         {
             try
             {
+                logger.LogInformation("update-task function called");
+                telemetryClient.TrackEvent("update-task function called");
+
                 ValidateJWT auth = new ValidateJWT(req);
                 if (!auth.IsValid)
                 {
+                    logger.LogInformation("update-task function - unauthorized");
+                    telemetryClient.TrackEvent("update-task function - unauthorized");
                     return new UnauthorizedResult(); // No authentication info.
                 }
                 return new OkObjectResult(await _fetchRepo.UpdateTaskStatusAsync(ObjectId.Parse(id)));
             }
             catch (Exception ex)
             {
+                logger.LogError("update-task function" + ex.Message);
+                telemetryClient.TrackEvent("update-task function" + ex.Message);
                 return new BadRequestObjectResult(ex.Message);
                 throw;
             }
@@ -117,15 +163,22 @@ namespace FetchToDoListFunc
         {
             try
             {
+                logger.LogInformation("delete-task function called");
+                telemetryClient.TrackEvent("delete-task function called");
+
                 ValidateJWT auth = new ValidateJWT(req);
                 if (!auth.IsValid)
                 {
+                    logger.LogInformation("delete-task function - unauthorized");
+                    telemetryClient.TrackEvent("delete-task function - unauthorized");
                     return new UnauthorizedResult(); // No authentication info.
                 }
                 return new OkObjectResult(await _fetchRepo.DeleteTaskAsync(ObjectId.Parse(id)));
             }
             catch (Exception ex)
             {
+                logger.LogError("delete-task function" + ex.Message);
+                telemetryClient.TrackEvent("delete-task function" + ex.Message);
                 return new BadRequestObjectResult(ex.Message);
                 throw;
             }
