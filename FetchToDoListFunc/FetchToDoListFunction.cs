@@ -13,37 +13,27 @@ using FetchToDoListFunc.Model;
 using MongoDB.Bson;
 using FetchToDoListFunc.Utility;
 using Microsoft.ApplicationInsights;
+using System.Collections;
+using Microsoft.Azure.Amqp.Framing;
+using Microsoft.Azure.WebJobs.ServiceBus;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using Azure.Messaging.ServiceBus;
 
 namespace FetchToDoListFunc
 {
-    public class FetchToDoListFunc
+    public class FetchToDoListFunction
     {
         private readonly IFetchToDoList _fetchRepo;
+        private readonly IConfiguration _configuration;
         private static readonly TelemetryClient telemetryClient = new TelemetryClient();
 
 
-        public FetchToDoListFunc(IFetchToDoList fetRepo)
+        public FetchToDoListFunction(IFetchToDoList fetRepo, IConfiguration configuration)
         {
             _fetchRepo = fetRepo;
+            _configuration = configuration;
         }
-
-        [FunctionName("Fetch")]
-        public static async Task<ActionResult> Fetch(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "fetch")] HttpRequest req,
-            ILogger log)
-        {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-            telemetryClient.TrackEvent("Fetch function Executed");
-
-            // Check if we have authentication info.
-            ValidateJWT auth = new ValidateJWT(req);
-            if (!auth.IsValid)
-            {
-                return new UnauthorizedResult(); // No authentication info.
-            }
-            return new OkObjectResult("hurray"); 
-        }
-
         [FunctionName("getall")]
         public async Task<ActionResult<IEnumerable<TaskList>>> GetAllTask([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger logger)
         {
@@ -71,7 +61,8 @@ namespace FetchToDoListFunc
         }
 
         [FunctionName("add-task")]
-        public async Task<ActionResult<List<TaskList>>> CreateAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req, ILogger logger)
+        //[return: ServiceBus("todolist-queue", EntityType =ServiceBusEntityType.Queue,Connection = "AzureWebJobsServiceBus")]
+        public async Task<ActionResult<string>> CreateAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req, ILogger logger)
         {
             try
             {
@@ -85,19 +76,29 @@ namespace FetchToDoListFunc
                     telemetryClient.TrackEvent("add-task function - unauthorized");
                     return new UnauthorizedResult(); // No authentication info.
                 }
-                var reqBody = await new StreamReader(req.Body).ReadToEndAsync();
-                var input = JsonConvert.DeserializeObject<TaskList>(reqBody);
-                var task = new TaskList
+                //var reqBody = await new StreamReader(req.Body).ReadToEndAsync();
+                //var input = JsonConvert.DeserializeObject<TaskList>(reqBody);
+                //var task = new TaskList
+                //{
+                //    //TaskId=input.TaskId,
+                //    TaskName=input.TaskName,
+                //    Description=input.Description,
+                //    TaskStartDate=input.TaskStartDate,
+                //    TaskEndDate=input.TaskEndDate,
+                //    TaskStatus=input.TaskStatus,
+                //    TotalEffortRequired=input.TotalEffortRequired
+                //};
+                //return new OkObjectResult(await _fetchRepo.CreateAsync(task));
+                var message = await new StreamReader(req.Body).ReadToEndAsync();
+                string queueName = "todolist-queue";
+                ServiceBusClient serviceBusClient = new ServiceBusClient("Endpoint=sb://todolist-asb.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=D+OgbaR4NcUokAt1SJcFTKoomop9NJawP+ASbEGxBA0=", new ServiceBusClientOptions()
                 {
-                    //TaskId=input.TaskId,
-                    TaskName=input.TaskName,
-                    Description=input.Description,
-                    TaskStartDate=input.TaskStartDate,
-                    TaskEndDate=input.TaskEndDate,
-                    TaskStatus=input.TaskStatus,
-                    TotalEffortRequired=input.TotalEffortRequired
-                };
-                return new OkObjectResult(await _fetchRepo.CreateAsync(task));
+                    TransportType = ServiceBusTransportType.AmqpWebSockets
+                });
+                ServiceBusSender serviceBusSender = serviceBusClient.CreateSender(queueName);
+                await serviceBusSender.SendMessageAsync(new ServiceBusMessage(message));
+
+                return new OkObjectResult("Message sent to the queue.");
             }
             catch (Exception ex)
             {

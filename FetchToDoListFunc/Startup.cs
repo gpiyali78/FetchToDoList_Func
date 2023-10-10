@@ -1,4 +1,5 @@
 ﻿using FetchToDoListFunc.Repository;
+using FetchToDoListFunc.ServiceBus;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,7 @@ namespace FetchToDoListFunc
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
@@ -37,6 +39,7 @@ namespace FetchToDoListFunc
             });
 
             builder.Services.AddSingleton<IFetchToDoList, FetchToDoList>();
+            builder.Services.AddSingleton<IServiceBusQueue, ServieBusQueue>();
         }
     }
 }
