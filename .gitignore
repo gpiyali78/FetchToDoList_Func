@@ -3,3 +3,5 @@
 ################################################################################
 
 /.vs
+/FetchToDoListFuncTest/bin/Debug/net6.0
+/FetchToDoListFuncTest/obj

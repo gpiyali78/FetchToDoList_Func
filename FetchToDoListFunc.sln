@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33712.159
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FetchToDoListFunc", "FetchToDoListFunc\FetchToDoListFunc.csproj", "{81BA5A65-ACC8-483E-8663-D7FF794934C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FetchToDoListFunc", "FetchToDoListFunc\FetchToDoListFunc.csproj", "{81BA5A65-ACC8-483E-8663-D7FF794934C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FetchToDoListFuncTest", "FetchToDoListFuncTest\FetchToDoListFuncTest.csproj", "{BFDF3F90-0979-4E49-90A6-98D2BF5EA3C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{81BA5A65-ACC8-483E-8663-D7FF794934C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81BA5A65-ACC8-483E-8663-D7FF794934C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81BA5A65-ACC8-483E-8663-D7FF794934C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFDF3F90-0979-4E49-90A6-98D2BF5EA3C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFDF3F90-0979-4E49-90A6-98D2BF5EA3C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFDF3F90-0979-4E49-90A6-98D2BF5EA3C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFDF3F90-0979-4E49-90A6-98D2BF5EA3C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
