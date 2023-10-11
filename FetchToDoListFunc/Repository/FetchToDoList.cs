@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FetchToDoListFunc.Repository
 {
-    internal class FetchToDoList : IFetchToDoList
+    public class FetchToDoList : IFetchToDoList
     {
         private readonly IMongoCollection<TaskList> _taskCollection;
 

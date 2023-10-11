@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FetchToDoListFunc.Model
 {
+    [ExcludeFromCodeCoverage]
     public class TaskList
     {
         [BsonId]

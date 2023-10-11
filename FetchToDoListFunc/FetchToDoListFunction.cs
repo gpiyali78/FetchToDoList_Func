@@ -19,20 +19,21 @@ using Microsoft.Azure.WebJobs.ServiceBus;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Azure.Messaging.ServiceBus;
+using System.Runtime.CompilerServices;
 
 namespace FetchToDoListFunc
 {
     public class FetchToDoListFunction
     {
         private readonly IFetchToDoList _fetchRepo;
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
         private static readonly TelemetryClient telemetryClient = new TelemetryClient();
 
 
-        public FetchToDoListFunction(IFetchToDoList fetRepo, IConfiguration configuration)
+        public FetchToDoListFunction(IFetchToDoList fetRepo)
         {
             _fetchRepo = fetRepo;
-            _configuration = configuration;
+            //_configuration = configuration;
         }
         [FunctionName("getall")]
         public async Task<ActionResult<IEnumerable<TaskList>>> GetAllTask([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger logger)
@@ -160,7 +161,7 @@ namespace FetchToDoListFunc
         }
 
         [FunctionName("delete-task")]
-        public async Task<ActionResult> DeleteProduct([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "delete-product/{id}")] HttpRequest req, ILogger logger, string id)
+        public async Task<ActionResult> DeleteTask([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "delete-product/{id}")] HttpRequest req, ILogger logger, string id)
         {
             try
             {
